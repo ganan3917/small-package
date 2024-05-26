@@ -1,6 +1,8 @@
 ##  介绍
 
-####    本脚本为基于 openwrt master 分支的 natmap 插件
+####    基于 openwrt master 分支的 natmap 插件
+
+注意：自 openwrt23.0 之后，使用golang>= 1.20，luci2（js实现网页），部分插件不兼容。
 
 ## 基本功能
 
@@ -30,7 +32,9 @@ API Key 请访问 https://dash.cloudflare.com/profile/api-tokens 复制 Global A
 
 ####    1.5.Cloudflare Redirect Rules
 
-    
+####    1.6.Cloudflare DDNS
+支持调用Cloudflare DDNS功能，通过ip4p格式的AAAA记录，存储外部IP和端口。
+
 ### 2.目前支持的通知功能
 ####    2.1.  Telegram Bot
 ####    2.2.  PushPlus
@@ -53,8 +57,8 @@ API Key 请访问 https://dash.cloudflare.com/profile/api-tokens 复制 Global A
 
 ## 截图展示
 
-![图1](./img/natmap-1.png)
-![图2](./img/natmap-2.png)
+![图1](./.img/natmap-1.png)
+![图2](./.img/natmap-2.png)
 
 
 ## 使用

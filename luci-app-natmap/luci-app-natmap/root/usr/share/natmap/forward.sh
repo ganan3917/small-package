@@ -12,24 +12,24 @@ if [ -z "$FORWARD_TARGET_PORT" ] || [ -z "$FORWARD_TARGET_IP" ]; then
 fi
 
 forward_script=""
-# case $FORWARD_MODE in
-# "firewall")
-#     forward_script="/usr/share/natmap/plugin-forward/firewall-forward.sh"
-#     ;;
-# "ikuai")
-#     forward_script="/usr/share/natmap/plugin-forward/ikuai-forward.sh"
-#     ;;
-# *)
-#     forward_script=""
-#     ;;
-# esac
+case $FORWARD_MODE in
+"firewall")
+    forward_script="/usr/share/natmap/plugin-forward/firewall-forward.sh"
+    ;;
+"ikuai")
+    forward_script="/usr/share/natmap/plugin-forward/ikuai-forward.sh"
+    ;;
+*)
+    forward_script=""
+    ;;
+esac
 
-# 如果$FORWARD_MODE非空则执行对应的脚本
-if [ -n "${FORWARD_MODE}" ]; then
-    forward_script="/usr/share/natmap/plugin-forward/${FORWARD_MODE}-forward.sh"
-fi
+# # 如果$FORWARD_MODE非空则执行对应的脚本
+# if [ -n "${FORWARD_MODE}" ]; then
+#     forward_script="/usr/share/natmap/plugin-forward/${FORWARD_MODE}-forward.sh"
+# fi
 
 if [ -n "${forward_script}" ]; then
-    # echo "$GENERAL_NAT_NAME execute forward script"
+    echo "$(date +'%Y-%m-%d %H:%M:%S') - $GENERAL_NAT_NAME execute forward script" >>/var/log/natmap/natmap.log
     bash "$forward_script" "$@"
 fi
