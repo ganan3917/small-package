@@ -8,13 +8,13 @@
 'require tools.widgets as widgets';
 
 return view.extend({
-	load: function() {
+	load() {
 		return Promise.all([
 			uci.load('fchomo')
 		]);
 	},
 
-	render: function(data) {
+	render(data) {
 		let m, s, o, ss, so;
 
 		m = new form.Map('fchomo', _('Edit node'));
@@ -81,7 +81,7 @@ return view.extend({
 		so.depends({type: /^(http|socks5|mieru|trojan|hysteria2|tuic|ssh)$/});
 		so.modalonly = true;
 
-		so = ss.taboption('field_general', hm.CBITextValue, 'headers', _('HTTP header'));
+		so = ss.taboption('field_general', hm.TextValue, 'headers', _('HTTP header'));
 		so.placeholder = '{\n  "User-Agent": [\n    "Clash/v1.18.0",\n    "mihomo/1.18.3"\n  ],\n  "Authorization": [\n    //"token 1231231"\n  ]\n}';
 		so.validate = L.bind(hm.validateJson, so);
 		so.depends('type', 'http');
@@ -151,8 +151,8 @@ return view.extend({
 		so = ss.taboption('field_general', form.Value, 'shadowsocks_password', _('Password'));
 		so.password = true;
 		so.validate = function(section_id, value) {
-			var encmode = this.section.getOption('shadowsocks_chipher').formvalue(section_id);
-			return hm.validateShadowsocksPassword.call(this, hm, encmode, section_id, value);
+			const encmode = this.section.getOption('shadowsocks_chipher').formvalue(section_id);
+			return hm.validateShadowsocksPassword.call(this, encmode, section_id, value);
 		}
 		so.depends({type: 'ss', shadowsocks_chipher: /.+/});
 		so.modalonly = true;
@@ -278,8 +278,8 @@ return view.extend({
 		so = ss.taboption('field_general', form.Value, 'trojan_ss_password', _('Shadowsocks password'));
 		so.password = true;
 		so.validate = function(section_id, value) {
-			var encmode = this.section.getOption('trojan_ss_chipher').formvalue(section_id);
-			return hm.validateShadowsocksPassword.call(this, hm, encmode, section_id, value);
+			const encmode = this.section.getOption('trojan_ss_chipher').formvalue(section_id);
+			return hm.validateShadowsocksPassword.call(this, encmode, section_id, value);
 		}
 		so.depends({type: 'trojan', trojan_ss_enabled: '1'});
 		so.modalonly = true;
@@ -470,9 +470,9 @@ return view.extend({
 		so = ss.taboption('field_general', form.Flag, 'tls', _('TLS'));
 		so.default = so.disabled;
 		so.validate = function(section_id, value) {
-			var type = this.section.getOption('type').formvalue(section_id);
-			var tls = this.section.getUIElement(section_id, 'tls').node.querySelector('input');
-			var tls_alpn = this.section.getUIElement(section_id, 'tls_alpn');
+			const type = this.section.getOption('type').formvalue(section_id);
+			let tls = this.section.getUIElement(section_id, 'tls').node.querySelector('input');
+			let tls_alpn = this.section.getUIElement(section_id, 'tls_alpn');
 
 			// Force enabled
 			if (['trojan', 'hysteria', 'hysteria2', 'tuic'].includes(type)) {
@@ -585,7 +585,7 @@ return view.extend({
 		so.value('grpc', _('gRPC'));
 		so.value('ws', _('WebSocket'));
 		so.validate = function(section_id, value) {
-			var type = this.section.getOption('type').formvalue(section_id);
+			const type = this.section.getOption('type').formvalue(section_id);
 
 			switch (type) {
 				case 'vmess':
@@ -639,7 +639,7 @@ return view.extend({
 		so.depends({transport_enabled: '1', transport_type: /^(h2|ws)$/});
 		so.modalonly = true;
 
-		so = ss.taboption('field_transport', hm.CBITextValue, 'transport_http_headers', _('HTTP header'));
+		so = ss.taboption('field_transport', hm.TextValue, 'transport_http_headers', _('HTTP header'));
 		so.placeholder = '{\n  "Host": "example.com",\n  "Connection": [\n    "keep-alive"\n  ]\n}';
 		so.validate = L.bind(hm.validateJson, so);
 		so.depends({transport_enabled: '1', transport_type: /^(http|ws)$/});
@@ -793,12 +793,12 @@ return view.extend({
 		ss.sectiontitle = L.bind(hm.loadDefaultLabel, ss);
 		/* Remove idle files start */
 		ss.renderSectionAdd = function(/* ... */) {
-			var el = hm.renderSectionAdd.apply(this, [prefmt, false].concat(Array.prototype.slice.call(arguments)));
+			let el = hm.renderSectionAdd.apply(this, [prefmt, false].concat(Array.prototype.slice.call(arguments)));
 
 			el.appendChild(E('button', {
 				'class': 'cbi-button cbi-button-add',
 				'title': _('Remove idles'),
-				'click': ui.createHandlerFn(this, hm.handleRemoveIdles, hm)
+				'click': ui.createHandlerFn(this, hm.handleRemoveIdles)
 			}, [ _('Remove idles') ]));
 
 			return el;
@@ -828,7 +828,7 @@ return view.extend({
 
 		so = ss.option(form.DummyValue, '_value', _('Value'));
 		so.load = function(section_id) {
-			var option = uci.get(data[0], section_id, 'type');
+			const option = uci.get(data[0], section_id, 'type');
 
 			switch (option) {
 				case 'file':
@@ -843,7 +843,7 @@ return view.extend({
 		}
 		so.modalonly = false;
 
-		so = ss.taboption('field_general', hm.CBITextValue, '_editer', _('Editer'),
+		so = ss.taboption('field_general', hm.TextValue, '_editer', _('Editer'),
 			_('Please type <a target="_blank" href="%s" rel="noreferrer noopener">%s</a>.')
 				.format('https://wiki.metacubex.one/config/proxy-providers/content/', _('Contents')));
 		so.placeholder = _('Content will not be verified, Please make sure you enter it correctly.');
@@ -857,7 +857,7 @@ return view.extend({
 		so.depends('type', 'file');
 		so.modalonly = true;
 
-		so = ss.taboption('field_general', hm.CBITextValue, 'payload', 'payload:',
+		so = ss.taboption('field_general', hm.TextValue, 'payload', 'payload:',
 			_('Please type <a target="_blank" href="%s" rel="noreferrer noopener">%s</a>.')
 				.format('https://wiki.metacubex.one/config/proxy-providers/content/', _('Payload')));
 		so.placeholder = '- name: "ss1"\n  type: ss\n  server: server\n  port: 443\n  cipher: chacha20-ietf-poly1305\n  password: "password"\n# ' + _('Content will not be verified, Please make sure you enter it correctly.');
@@ -894,7 +894,7 @@ return view.extend({
 		//so.editable = true;
 		so.depends('type', 'http');
 
-		so = ss.taboption('field_general', hm.CBITextValue, 'header', _('HTTP header'),
+		so = ss.taboption('field_general', hm.TextValue, 'header', _('HTTP header'),
 			_('Custom HTTP header.'));
 		so.placeholder = '{\n  "User-Agent": [\n    "Clash/v1.18.0",\n    "mihomo/1.18.3"\n  ],\n  "Accept": [\n    //"application/vnd.github.v3.raw"\n  ],\n  "Authorization": [\n    //"token 1231231"\n  ]\n}';
 		so.validate = L.bind(hm.validateJson, so);
@@ -1041,7 +1041,7 @@ return view.extend({
 		so.modalonly = true;
 
 		so = ss.option(form.DummyValue, '_update');
-		so.cfgvalue = L.bind(hm.renderResDownload, so, hm);
+		so.cfgvalue = L.bind(hm.renderResDownload, so);
 		so.editable = true;
 		so.modalonly = false;
 		/* Provider END */
@@ -1079,8 +1079,8 @@ return view.extend({
 
 		so = ss.option(form.DummyValue, '_value', _('Value'));
 		so.load = function(section_id) {
-			var type = uci.get(data[0], section_id, 'type');
-			var detour = uci.get(data[0], section_id, 'chain_tail_group') || uci.get(data[0], section_id, 'chain_tail');
+			const type = uci.get(data[0], section_id, 'type');
+			const detour = uci.get(data[0], section_id, 'chain_tail_group') || uci.get(data[0], section_id, 'chain_tail');
 
 			switch (type) {
 				case 'node':
@@ -1100,7 +1100,7 @@ return view.extend({
 		so.modalonly = false;
 
 		so = ss.option(form.ListValue, 'chain_head_sub', _('Chain head'));
-		so.load = L.bind(hm.loadProviderLabel, so);
+		so.load = L.bind(hm.loadProviderLabel, so, [['', _('-- Please choose --')]]);
 		so.rmempty = false;
 		so.depends('type', 'provider');
 		so.modalonly = true;
@@ -1108,10 +1108,10 @@ return view.extend({
 		so = ss.option(form.ListValue, 'chain_head', _('Chain head'),
 			_('Recommended to use UoT node.</br>such as <code>%s</code>.')
 			.format('ss|ssr|vmess|vless|trojan|tuic'));
-		so.load = L.bind(hm.loadNodeLabel, so);
+		so.load = L.bind(hm.loadNodeLabel, so, [['', _('-- Please choose --')]]);
 		so.rmempty = false;
 		so.validate = function(section_id, value) {
-			var chain_tail = this.section.getUIElement(section_id, 'chain_tail').getValue();
+			const chain_tail = this.section.getUIElement(section_id, 'chain_tail').getValue();
 
 			if (value === chain_tail)
 				return _('Expecting: %s').format(_('Different chain head/tail'));
@@ -1121,33 +1121,7 @@ return view.extend({
 		so.depends('type', 'node');
 		so.modalonly = true;
 
-		/*
-		so = ss.option(hm.CBIStaticList, 'chain_body', _('Chain body'));
-		so.value('', _('-- Please choose --'));
-		so.load = L.bind(hm.loadNodeLabel, so);
-		so.validate = function(section_id, value) {
-			var chain_head = this.section.getUIElement(section_id, 'chain_head').getValue();
-			var chain_tail = this.section.getUIElement(section_id, 'chain_tail').getValue();
-			value = this.getUIElement(section_id).getValue();
-
-			if (value.includes(chain_head) || value.includes(chain_tail))
-				return _('Expecting: %s').format(_('Different with chain head/tail'));
-
-			return true;
-		}
-		so.textvalue = function(section_id) {
-			var cvals = this.cfgvalue(section_id);
-			//alert(Array.prototype.join.call(cvals, ':'));
-			return cvals ? '» ' + cvals.map((cval) => {
-				var i = this.keylist.indexOf(cval);
-
-				return this.vallist[i];
-			}).join(' » ') + ' »' : '»';
-		}
-		*/
-
 		so = ss.option(form.ListValue, 'chain_tail_group', _('Chain tail'));
-		so.value('', _('-- Please choose --'));
 		so.load = L.bind(hm.loadProxyGroupLabel, so, [['', _('-- Please choose --')]]);
 		so.rmempty = false;
 		so.depends({chain_tail: /.+/, '!reverse': true});
@@ -1156,10 +1130,10 @@ return view.extend({
 		so = ss.option(form.ListValue, 'chain_tail', _('Chain tail'),
 			_('Recommended to use UoT node.</br>such as <code>%s</code>.')
 			.format('ss|ssr|vmess|vless|trojan|tuic'));
-		so.load = L.bind(hm.loadNodeLabel, so);
+		so.load = L.bind(hm.loadNodeLabel, so, [['', _('-- Please choose --')]]);
 		so.rmempty = false;
 		so.validate = function(section_id, value) {
-			var chain_head = this.section.getUIElement(section_id, 'chain_head').getValue();
+			const chain_head = this.section.getUIElement(section_id, 'chain_head').getValue();
 
 			if (value === chain_head)
 				return _('Expecting: %s').format(_('Different chain head/tail'));
